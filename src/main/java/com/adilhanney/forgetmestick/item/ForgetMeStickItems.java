@@ -25,7 +25,7 @@ public class ForgetMeStickItems {
   public static void registerItems() {
     ForgetMeStick.LOGGER.info("Registering Items for " + ForgetMeStick.MOD_ID);
 
-    ItemGroupEvents.modifyEntriesEvent(ItemGroups.OPERATOR).register(entries -> {
+    ItemGroupEvents.modifyEntriesEvent(ItemGroups.TOOLS).register(entries -> {
       entries.add(FORGET_ME_STICK);
     });
   }
