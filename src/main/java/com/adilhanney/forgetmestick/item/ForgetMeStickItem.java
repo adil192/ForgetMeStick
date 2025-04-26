@@ -4,12 +4,12 @@ import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.mob.Angerable;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.village.VillageGossipType;
 
@@ -20,9 +20,25 @@ public class ForgetMeStickItem extends Item {
 
   @Override
   public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-    if (!(target instanceof VillagerEntity villager)) return false;
     if (!(attacker instanceof PlayerEntity player)) return false;
 
+    if (target instanceof VillagerEntity villager) {
+      return postHitVillager(stack, villager, player);
+    } else if (target instanceof Angerable) {
+      return postHitAngerableEntity(stack, target, player);
+    } else {
+      return false;
+    }
+  }
+
+  @Override
+  public boolean canRepair(ItemStack stack, ItemStack ingredient) {
+    // Allow repairing with ender pearls in an anvil
+    final var item = ingredient.getItem();
+    return item == Items.ENDER_PEARL || item == Items.ENDER_EYE;
+  }
+
+  private boolean postHitVillager(ItemStack stack, VillagerEntity villager, PlayerEntity player) {
     final int startReputation = villager.getReputation(player);
     if (startReputation == 0) return false; // No reputation to reset
 
@@ -33,7 +49,10 @@ public class ForgetMeStickItem extends Item {
     }
 
     // After-effects
-    villager.setHealth(Math.min(2, villager.getMaxHealth()));
+    villager.setHealth(Math.min(
+        villager.getHealth(),
+        (float) Math.ceil(villager.getMaxHealth() * 0.1)
+    ));
     villager.handleStatus(startReputation > 0
         ? EntityStatuses.ADD_VILLAGER_ANGRY_PARTICLES
         : EntityStatuses.ADD_VILLAGER_HAPPY_PARTICLES);
@@ -45,14 +64,28 @@ public class ForgetMeStickItem extends Item {
     return true;
   }
 
-  @Override
-  public boolean canRepair(ItemStack stack, ItemStack ingredient) {
-    // Allow repairing with bones
-    final var item = ingredient.getItem();
-    return item == Items.ENDER_PEARL || item == Items.ENDER_EYE;
+  private boolean postHitAngerableEntity(ItemStack stack, LivingEntity entity, PlayerEntity player) {
+    if (!(entity instanceof Angerable angerableEntity)) return false;
+
+    // Reset anger
+    final boolean isAngry = angerableEntity.hasAngerTime();
+    if (!isAngry) return false;
+    angerableEntity.stopAnger();
+
+    // After-effects
+    entity.setHealth(Math.min(
+        entity.getHealth(),
+        (float) Math.ceil(entity.getMaxHealth() * 0.5)
+    ));
+    applyStatusEffects(entity);
+
+    // Reduce durability
+    stack.damage(4, player, LivingEntity.getSlotForHand(Hand.MAIN_HAND));
+
+    return true;
   }
 
-  private void applyStatusEffects(VillagerEntity villager) {
+  private void applyStatusEffects(LivingEntity villager) {
     final var tps = 20;
     final var longDuration = 15 * tps;
     final var shortDuration = 5 * tps;
