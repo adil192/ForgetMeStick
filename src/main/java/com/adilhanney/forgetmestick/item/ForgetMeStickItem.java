@@ -48,7 +48,8 @@ public class ForgetMeStickItem extends Item {
   @Override
   public boolean canRepair(ItemStack stack, ItemStack ingredient) {
     // Allow repairing with bones
-    return ingredient.getItem() == Items.BONE;
+    final var item = ingredient.getItem();
+    return item == Items.ENDER_PEARL || item == Items.ENDER_EYE;
   }
 
   private void applyStatusEffects(VillagerEntity villager) {
