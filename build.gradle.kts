@@ -1,5 +1,6 @@
 plugins {
-	id("fabric-loom") version "1.10-SNAPSHOT"
+	id("gg.essential.multi-version")
+	id("gg.essential.defaults")
 }
 
 version = project.property("mod_version") as String
@@ -8,10 +9,19 @@ group = project.property("maven_group") as String
 val minecraftVersion = project.property("minecraft_version") as String
 val yarnMappings = project.property("yarn_mappings") as String
 val loaderVersion = project.property("loader_version") as String
-val fabricVersion = project.property("fabric_version") as String
+val fabricVersion12101: String by project
+val fabricVersion12001: String by project
+
+val javaVersion = when {
+	project.platform.mcMinor >= 21 -> JavaVersion.VERSION_21
+	else -> JavaVersion.VERSION_17
+}
+
+val finalJarsDir = "${project.rootDir}/jars"
 
 base {
-	archivesName.set(project.property("archives_base_name") as String)
+	val archiveBase: String by project
+	archivesName.set("$archiveBase-${platform.loaderStr}-${getMinecraftVersionsForFileName()}")
 }
 
 repositories {
@@ -23,23 +33,14 @@ repositories {
 }
 
 dependencies {
-	// To change the versions see the gradle.properties file
-	minecraft("com.mojang:minecraft:${minecraftVersion}")
-	mappings("net.fabricmc:yarn:${yarnMappings}:v2")
-	modImplementation("net.fabricmc:fabric-loader:${loaderVersion}")
-	modImplementation("net.fabricmc.fabric-api:fabric-api:${fabricVersion}")
-}
-
-tasks.named<ProcessResources>("processResources") {
-	inputs.property("version", project.version)
-
-	filesMatching("fabric.mod.json") {
-		expand("version" to inputs.properties["version"])
+	when (project.platform.mcMinor) {
+		21 -> {
+			modImplementation("net.fabricmc.fabric-api:fabric-api:${fabricVersion12101}")
+		}
+		else -> {
+			modImplementation("net.fabricmc.fabric-api:fabric-api:${fabricVersion12001}")
+		}
 	}
-}
-
-tasks.withType<JavaCompile>().configureEach {
-	options.release.set(21)
 }
 
 java {
@@ -48,12 +49,59 @@ java {
 	// If you remove this line, sources will not be generated.
 	withSourcesJar()
 
-	sourceCompatibility = JavaVersion.VERSION_21
-	targetCompatibility = JavaVersion.VERSION_21
+	sourceCompatibility = javaVersion
+	targetCompatibility = javaVersion
 }
 
 tasks {
+	processResources {
+		inputs.property("java", javaVersion.majorVersion)
+		inputs.property("version", version)
+		filesMatching(listOf("fabric.mod.json")) {
+			expand(
+				mapOf(
+					"version" to version,
+					"minecraftVersions" to getMinecraftVersionsForFabric(),
+					"java" to javaVersion.majorVersion,
+				)
+			)
+		}
+	}
+
 	withType<Jar> {
 		from(rootProject.file("LICENSE"))
+	}
+
+	register<Copy>("copyJars") {
+		File(finalJarsDir).mkdir()
+		from(remapJar.get().archiveFile)
+		into(finalJarsDir)
+		from(remapSourcesJar.get().archiveFile)
+		into(finalJarsDir)
+	}
+
+	build {
+		dependsOn("copyJars")
+	}
+
+	clean {
+		delete(finalJarsDir)
+	}
+}
+
+
+fun getMinecraftVersionsForFileName(): String {
+	return when (project.platform.mcVersionStr) {
+		"1.21.1" -> "1.21.0-1.21.3"
+		"1.20.1" -> "1.20.x"
+		else -> project.platform.mcVersionStr
+	}
+}
+
+fun getMinecraftVersionsForFabric(): String {
+	return when (project.platform.mcVersionStr) {
+		"1.21.1" -> ">=1.21 <1.21.4"
+		"1.20.1" -> "~1.20"
+		else -> "~${project.platform.mcVersionStr}"
 	}
 }

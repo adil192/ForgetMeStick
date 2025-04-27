@@ -1,6 +1,7 @@
 package com.adilhanney.forgetmestick.item;
 
 import net.minecraft.entity.EntityStatuses;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
@@ -10,7 +11,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.util.Hand;
 import net.minecraft.village.VillageGossipType;
 
 public class ForgetMeStickItem extends Item {
@@ -59,7 +59,7 @@ public class ForgetMeStickItem extends Item {
     applyStatusEffects(villager);
 
     // Reduce durability
-    stack.damage(1, player, LivingEntity.getSlotForHand(Hand.MAIN_HAND));
+    damage(stack, 1, player);
 
     return true;
   }
@@ -80,7 +80,7 @@ public class ForgetMeStickItem extends Item {
     applyStatusEffects(entity);
 
     // Reduce durability
-    stack.damage(4, player, LivingEntity.getSlotForHand(Hand.MAIN_HAND));
+    damage(stack, 4, player);
 
     return true;
   }
@@ -96,5 +96,13 @@ public class ForgetMeStickItem extends Item {
     villager.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, shortDuration, 2, true, true));
     villager.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, longDuration, 0, true, true));
     villager.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, shortDuration, 9, true, true));
+  }
+
+  private void damage(ItemStack stack, int amount, PlayerEntity player) {
+    //#if MC>=12101
+    stack.damage(amount, player, EquipmentSlot.MAINHAND);
+    //#else
+    //$$stack.damage(amount, player, p -> p.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
+    //#endif
   }
 }
