@@ -3,8 +3,10 @@ plugins {
 	id("gg.essential.defaults")
 }
 
-version = project.property("mod_version") as String
-group = project.property("maven_group") as String
+val modVersion: String by project
+val mavenGroup: String by project
+version = modVersion
+group = mavenGroup
 
 val minecraftVersion = project.property("minecraft_version") as String
 val yarnMappings = project.property("yarn_mappings") as String
@@ -56,12 +58,14 @@ java {
 tasks {
 	processResources {
 		inputs.property("java", javaVersion.majorVersion)
-		inputs.property("version", version)
+		inputs.property("version", project.version)
+		inputs.property("mcVersionStr", project.platform.mcVersionStr)
 		filesMatching(listOf("fabric.mod.json")) {
 			expand(
 				mapOf(
-					"version" to version,
+					"version" to modVersion,
 					"minecraftVersions" to getMinecraftVersionsForFabric(),
+					"mcVersionStr" to project.platform.mcVersionStr,
 					"java" to javaVersion.majorVersion,
 				)
 			)
