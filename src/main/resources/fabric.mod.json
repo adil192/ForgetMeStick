@@ -18,9 +18,6 @@
 			"com.adilhanney.forgetmestick.ForgetMeStick"
 		]
 	},
-	"mixins": [
-		"forgetmestick.mixins.json"
-	],
 	"depends": {
 		"fabricloader": ">=0.16.6",
 		"minecraft": "~1.21",
