@@ -16,9 +16,6 @@
 	"entrypoints": {
 		"main": [
 			"com.adilhanney.forgetmestick.ForgetMeStick"
-		],
-		"fabric-datagen": [
-			"com.adilhanney.forgetmestick.ForgetMeStickDataGenerator"
 		]
 	},
 	"mixins": [
