@@ -8,7 +8,9 @@
 		"adil192"
 	],
 	"contact": {
-		"sources": "https://github.com/adil192/ForgetMeStick"
+		"sources": "https://github.com/adil192/ForgetMeStick",
+		"homepage": "https://github.com/adil192/ForgetMeStick",
+		"issues": "https://github.com/adil192/ForgetMeStick/issues"
 	},
 	"license": "MIT",
 	"icon": "assets/forgetmestick/icon.png",
