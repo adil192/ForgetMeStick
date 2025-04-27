@@ -12,6 +12,7 @@ val minecraftVersion = project.property("minecraft_version") as String
 val yarnMappings = project.property("yarn_mappings") as String
 val loaderVersion = project.property("loader_version") as String
 val fabricVersion12101: String by project
+val fabricVersion12104: String by project
 val fabricVersion12001: String by project
 
 val javaVersion = when {
@@ -35,14 +36,12 @@ repositories {
 }
 
 dependencies {
-	when (project.platform.mcMinor) {
-		21 -> {
-			modImplementation("net.fabricmc.fabric-api:fabric-api:${fabricVersion12101}")
-		}
-		else -> {
-			modImplementation("net.fabricmc.fabric-api:fabric-api:${fabricVersion12001}")
-		}
+	val fabricVersion = when (project.platform.mcVersionStr) {
+		"1.21.4" -> fabricVersion12104
+		"1.21.1" -> fabricVersion12101
+		else -> fabricVersion12001
 	}
+	modImplementation("net.fabricmc.fabric-api:fabric-api:${fabricVersion}")
 }
 
 java {
@@ -96,7 +95,8 @@ tasks {
 
 fun getMinecraftVersionsForFileName(): String {
 	return when (project.platform.mcVersionStr) {
-		"1.21.1" -> "1.21.0-1.21.3"
+		"1.21.4" -> "1.21.2-1.21.5"
+		"1.21.1" -> "1.21.0-1.21.1"
 		"1.20.1" -> "1.20.x"
 		else -> project.platform.mcVersionStr
 	}
@@ -104,7 +104,8 @@ fun getMinecraftVersionsForFileName(): String {
 
 fun getMinecraftVersionsForFabric(): String {
 	return when (project.platform.mcVersionStr) {
-		"1.21.1" -> ">=1.21 <1.21.4"
+		"1.21.4" -> "~1.21.2"
+		"1.21.1" -> ">=1.21 <1.21.2"
 		"1.20.1" -> "~1.20"
 		else -> "~${project.platform.mcVersionStr}"
 	}

@@ -16,6 +16,7 @@ pluginManagement {
 
 listOf(
 	"1.21.1-fabric",
+	"1.21.4-fabric",
 	"1.20.1-fabric",
 ).forEach { version ->
 	include(":$version")

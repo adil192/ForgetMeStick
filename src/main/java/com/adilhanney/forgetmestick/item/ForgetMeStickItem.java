@@ -31,12 +31,14 @@ public class ForgetMeStickItem extends Item {
     }
   }
 
+  //#if MC<=12101
   @Override
   public boolean canRepair(ItemStack stack, ItemStack ingredient) {
     // Allow repairing with ender pearls in an anvil
     final var item = ingredient.getItem();
     return item == Items.ENDER_PEARL || item == Items.ENDER_EYE;
   }
+  //#endif
 
   private boolean postHitVillager(ItemStack stack, VillagerEntity villager, PlayerEntity player) {
     final int startReputation = villager.getReputation(player);

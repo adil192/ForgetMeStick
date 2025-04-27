@@ -1,6 +1,6 @@
 package com.adilhanney.forgetmestick;
 
-import com.adilhanney.forgetmestick.item.ForgetMeStickItems;
+import com.adilhanney.forgetmestick.item.ModItems;
 import net.fabricmc.api.ModInitializer;
 
 import org.slf4j.Logger;
@@ -13,6 +13,6 @@ public class ForgetMeStick implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		LOGGER.info("Hello Fabric world!");
-		ForgetMeStickItems.registerItems();
+		ModItems.registerItems();
 	}
 }
