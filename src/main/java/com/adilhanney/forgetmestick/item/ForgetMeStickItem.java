@@ -1,5 +1,6 @@
 package com.adilhanney.forgetmestick.item;
 
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -11,7 +12,9 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.village.VillageGossipType;
+import net.minecraft.world.World;
 
 public class ForgetMeStickItem extends Item {
   public ForgetMeStickItem(Settings settings) {
@@ -39,6 +42,13 @@ public class ForgetMeStickItem extends Item {
     return item == Items.ENDER_PEARL || item == Items.ENDER_EYE;
   }
   //#endif
+
+
+  @Override
+  public boolean canMine(BlockState state, World world, BlockPos pos, PlayerEntity miner) {
+    // Don't allow mining with the forget-me stick, like a sword
+    return false;
+  }
 
   private boolean postHitVillager(ItemStack stack, VillagerEntity villager, PlayerEntity player) {
     final int startReputation = villager.getReputation(player);
