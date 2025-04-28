@@ -16,6 +16,8 @@
   ],
   "result": {
     "count": 1,
-    "id": "forgetmestick:forget_me_stick"
-  }
+    "id": "forgetmestick:forget_me_stick",
+    "item": "forgetmestick:forget_me_stick"
+  },
+  "show_notification": true
 }
