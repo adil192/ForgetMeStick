@@ -1,7 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
-  //#if MC<12104
   "key": {
     "E": {
       "item": "minecraft:ender_pearl"
@@ -10,12 +9,6 @@
       "item": "minecraft:bone"
     }
   },
-  //#else
-  //$$"key": {
-  //$$  "E": "minecraft:ender_pearl",
-  //$$  "B": "minecraft:bone"
-  //$$},
-  //#endif
   "pattern": [
     "E",
     "E",

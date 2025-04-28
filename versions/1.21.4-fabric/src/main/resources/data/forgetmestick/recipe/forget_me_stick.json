@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "E": "minecraft:ender_pearl",
+    "B": "minecraft:bone"
+  },
+  "pattern": [
+    "E",
+    "E",
+    "B"
+  ],
+  "result": {
+    "count": 1,
+    "id": "forgetmestick:forget_me_stick"
+  }
+}
