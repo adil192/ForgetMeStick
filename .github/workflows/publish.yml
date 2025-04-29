@@ -32,9 +32,12 @@ jobs:
       - name: get changelog
         id: changelog
         run: |
-          # Get the changelog between the two titles in CHANGELOG.md
-          CHANGELOG=$(awk 'p && /^#/ { exit } p && NF { print } /^#/ { p=1 }' CHANGELOG.md)
-          echo "changelog=$CHANGELOG" >> $GITHUB_OUTPUT
+          # Get the latest changelog from CHANGELOG.md
+          {
+            echo "changelog<<EOF"
+            awk 'p && /^#/ { exit } p && NF { print } /^#/ { p=1 }' CHANGELOG.md
+            echo "EOF"
+          } >> $GITHUB_OUTPUT
 
       - name: publish 1.20.x
         if: ${{ startsWith(github.ref, 'refs/tags/') }}
