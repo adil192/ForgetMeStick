@@ -1,0 +1,85 @@
+name: publish
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - '**'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+      - name: setup jdk
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'microsoft'
+
+      - name: build
+        run: ./gradlew clean build
+
+      - name: upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ForgetMeStickArtifacts
+          path: jars/
+
+      - name: get changelog
+        id: changelog
+        run: |
+          # Get the changelog between the two titles in CHANGELOG.md
+          CHANGELOG=$(awk 'p && /^#/ { exit } p && NF { print } /^#/ { p=1 }' CHANGELOG.md)
+          echo "changelog=$CHANGELOG" >> $GITHUB_OUTPUT
+
+      - name: publish 1.20.x
+        if: ${{ startsWith(github.ref, 'refs/tags/') }}
+        uses: Kir-Antipov/mc-publish@v3.3
+        with:
+          name: ForgetMeStick ${{ github.ref_name }} for Minecraft 1.20.x
+          changelog: ${{ steps.changelog.outputs.changelog }}
+          files: |
+            jars/*-1.20.x-!(*-sources).jar
+          game-versions: |
+            >=1.20 <21
+          java: |
+            17
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+          curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
+          fail-mode: warn
+
+      - name: publish 1.21.0-1.21.1
+        if: ${{ startsWith(github.ref, 'refs/tags/') }}
+        uses: Kir-Antipov/mc-publish@v3.3
+        with:
+          name: ForgetMeStick ${{ github.ref_name }} for Minecraft 1.21.0-1.21.1
+          changelog: ${{ steps.changelog.outputs.changelog }}
+          files: |
+            jars/*-1.21.0-1.21.1-!(*-sources).jar
+          game-versions: |
+            >=1.21 <1.21.2
+          java: |
+            21
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+          curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
+          fail-mode: warn
+
+      - name: publish 1.21.2-1.21.5
+        if: ${{ startsWith(github.ref, 'refs/tags/') }}
+        uses: Kir-Antipov/mc-publish@v3.3
+        with:
+          name: ForgetMeStick ${{ github.ref_name }} for Minecraft 1.21.2-1.21.5
+          changelog: ${{ steps.changelog.outputs.changelog }}
+          files: |
+            jars/*-1.21.2-1.21.5-!(*-sources).jar
+          game-versions: |
+            >=1.21.2 <1.22
+          java: |
+            21
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+          curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
+          fail-mode: warn
