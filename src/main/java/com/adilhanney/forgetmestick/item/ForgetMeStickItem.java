@@ -44,10 +44,10 @@ public class ForgetMeStickItem extends Item {
   //#endif
 
 
+  /** Can only mine in survival mode, same as {@link net.minecraft.item.SwordItem} */
   @Override
   public boolean canMine(BlockState state, World world, BlockPos pos, PlayerEntity miner) {
-    // Don't allow mining with the forget-me stick, like a sword
-    return false;
+    return !miner.isCreative();
   }
 
   private boolean postHitVillager(ItemStack stack, VillagerEntity villager, PlayerEntity player) {
