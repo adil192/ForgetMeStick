@@ -44,7 +44,7 @@ public class ForgetMeStickItem extends Item {
   //#endif
 
 
-  /** Can only mine in survival mode, same as {@link net.minecraft.item.SwordItem} */
+  /** Can only mine in survival mode, same as {@link net.minecraft.item.SwordItem#canMine} */
   @Override
   public boolean canMine(BlockState state, World world, BlockPos pos, PlayerEntity miner) {
     return !miner.isCreative();
