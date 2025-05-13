@@ -1,3 +1,8 @@
+# v1.0.4
+
+- Fixed the item texture being missing in 1.21.5
+- Allowed mining with the Forget-Me Stick in survival to better match sword behavior
+
 # v1.0.3
 
 - Fixed crafting recipes on 1.20.1 and 1.21.4
